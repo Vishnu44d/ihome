@@ -1,0 +1,55 @@
+version: "3"
+
+services: 
+  mqtt: 
+    image: eclipse-mosquitto
+    labels: 
+      - "traefik.enable=true"
+      # - "traefik.http.routers.mqtt.entrypoints=web"
+      - traefik.http.routers.mqtt.rule=Host("ihomemqtt.duckdns.org")
+
+  
+  grafana:
+    image: grafana/grafana
+    labels: 
+      - "traefik.enable=true"
+      # - "traefik.http.routers.grafana.entrypoints=web"
+      - traefik.http.routers.grafana.rule=Host("ihomegrafana.duckdns.org")
+  
+  influx:
+    image: influxdb
+
+  datahandler:
+    build:
+      context: ./datahandler
+      dockerfile: ./datahandler/Dockerfile
+    depends_on: 
+      - influx
+      - mqtt
+  
+  ihomeback:
+    build:
+      context: ./ihomeback
+      dockerfile: ./ihomeback/Dockerfile
+    labels: 
+      - "traefik.enable=true"
+      # - "traefik.http.routers.mqtt.entrypoints=web"
+      - traefik.http.routers.ihomeback.rule=Host("ihomev.duckdns.org")
+    depends_on: 
+      - influx
+      - mqtt
+  
+  traefik:
+    image: traefik
+    command: 
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    volumes: 
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    ports: 
+      - 80:80
+      - 1883:8080
+    
+    
