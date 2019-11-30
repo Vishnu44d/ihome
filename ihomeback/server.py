@@ -1,5 +1,6 @@
 import os
-from flask import Flask, jsonify
+from flask import Flask
+import json
 from flask_mqtt import Mqtt
 
 app = Flask(__name__)
@@ -20,10 +21,8 @@ def handle_connect(client, userdata, flags, rc):
 @app.route('/', methods=['GET'])
 def root():
     try:
-        pub_data = {
-            "data1": "value1"
-        }
-        mqtt.publish("sensors/thermometer/1", str.encode(jsonify(pub_data)))
+        pub_data = {"data1": "value1"}
+        mqtt.publish("sensors/thermometer/1", json.dumps(pub_data))
         return "<h1>Hello</h1>"
     except:
         return "<h1>World</h1>"
