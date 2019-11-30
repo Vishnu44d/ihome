@@ -22,7 +22,7 @@ services:
   datahandler:
     build:
       context: ./datahandler
-      dockerfile: ./datahandler/Dockerfile
+      dockerfile: ./Dockerfile
     depends_on: 
       - influx
       - mqtt
@@ -30,7 +30,7 @@ services:
   ihomeback:
     build:
       context: ./ihomeback
-      dockerfile: ./ihomeback/Dockerfile
+      dockerfile: ./Dockerfile
     labels: 
       - "traefik.enable=true"
       # - "traefik.http.routers.mqtt.entrypoints=web"
