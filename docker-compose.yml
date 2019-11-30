@@ -35,6 +35,7 @@ services:
       - "traefik.enable=true"
       # - "traefik.http.routers.mqtt.entrypoints=web"
       - traefik.http.routers.ihomeback.rule=Host("ihomev.duckdns.org")
+      - traefik.http.services.ihomeback.loadbalancer.server.port=9991
     depends_on: 
       - influx
       - mqtt

@@ -12,6 +12,7 @@ mqtt = Mqtt(app)
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
+    print("Connecting...")
     mqtt.subscribe('sensors/thermometer/1')
 
 
@@ -28,4 +29,5 @@ def root():
         return "<h1>World</h1>"
 
 if __name__ == "__main__":
+    print("Starting the server")
     app.run(port=os.environ.get("FLASK_PORT", "9991"))
