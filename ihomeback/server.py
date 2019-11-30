@@ -42,17 +42,14 @@ client.on_connect = on_connect
 client.on_subscribe = on_subscribe    
 client.on_message = on_message    
 client.connect(host="mqtt", port=1883)
-
-
-  
-    
+ 
 
 
 @app.route('/', methods=['GET'])
 def root():
     try:
         pub_data = {"data1": "value1"}
-        mqtt.publish("sensors/thermometer/1", json.dumps(pub_data))
+        client.publish("sensors/thermometer/1", json.dumps(pub_data))
         return "<h1>Hello</h1>"
     except Exception as e:
         print(str(e))
