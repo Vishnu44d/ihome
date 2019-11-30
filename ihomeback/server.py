@@ -30,4 +30,4 @@ def root():
 
 if __name__ == "__main__":
     print("Starting the server")
-    app.run(port=os.environ.get("FLASK_PORT", "9991"))
+    app.run(host='0.0.0.0', port=os.environ.get("FLASK_PORT", "80"))
