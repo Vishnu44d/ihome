@@ -23,7 +23,7 @@ def root():
         pub_data = {
             "data1": "value1"
         }
-        mqtt.publish("sensors/thermometer/1", jsonify(pub_data))
+        mqtt.publish("sensors/thermometer/1", str.encode(jsonify(pub_data)))
         return "<h1>Hello</h1>"
     except:
         return "<h1>World</h1>"
