@@ -24,7 +24,8 @@ def root():
         pub_data = {"data1": "value1"}
         mqtt.publish("sensors/thermometer/1", json.dumps(pub_data))
         return "<h1>Hello</h1>"
-    except:
+    except Exception as e:
+        print(str(e))
         return "<h1>World</h1>"
 
 if __name__ == "__main__":
