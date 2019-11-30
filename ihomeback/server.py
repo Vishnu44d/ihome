@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, jsonify
 from flask_mqtt import Mqtt
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ def root():
         pub_data = {
             "data1": "value1"
         }
-        mqtt.publish("sensors/thermometer/1", pub_data)
+        mqtt.publish("sensors/thermometer/1", jsonify(pub_data))
         return "<h1>Hello</h1>"
     except:
         return "<h1>World</h1>"
