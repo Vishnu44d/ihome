@@ -16,13 +16,11 @@ def on_subscribe(client, userdata, mid, granted_qos):
     print("I've subscribed")
 
 def write_db(payload):
-    dbname="ihome"
-    host="influx"
-    port=8086
-    influx_client = InfluxDBClient(host=host, port=port)
-    influx_client.switch_database(dbname)
-    print("Data write done!")
-    return influx_client.write_points(payload)
+    try:
+        influx_client.write_points(payload):
+        print("Data write done!")
+    except Exception as e:
+        print("Error writting ", str(e))
 
 
 
@@ -40,5 +38,10 @@ if __name__ == "__main__":
     client.on_connect = on_connect    
     client.on_subscribe = on_subscribe    
     client.on_message = on_message    
-    client.connect(host="mqtt", port=1883)    
+    client.connect(host="mqtt", port=1883)  
+    dbname="ihome"
+    host="influx"
+    port=8086
+    influx_client = InfluxDBClient(host=host, port=port)
+    influx_client.switch_database(dbname)  
     client.loop_forever()

@@ -48,7 +48,6 @@ client.connect(host="mqtt", port=1883)
 @app.route('/', methods=['GET'])
 def root():
     try:
-        pub_data = {"data1": "value1"}
         json_body = [
             {
                 "measurement": "temperature",
@@ -60,7 +59,7 @@ def root():
                 }
             }
         ]
-        client.publish("sensors/thermometer/1", json.dumps(json_body))
+        client.publish("sensors/thermometer/1", json.dumps(json_body)).wait_for_publish()
         return "<h1>Hello</h1>"
     except Exception as e:
         print(str(e))
