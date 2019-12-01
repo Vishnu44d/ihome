@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 import sys
 from influxdb import InfluxDBClient
+import json
 
 
 def on_connect(client, userdata, flags, rc):    
@@ -20,6 +21,7 @@ def write_db(payload):
     port=8086
     influx_client = InfluxDBClient(host=host, port=port)
     influx_client.switch_database(dbname)
+    print("Data write done!")
     return influx_client.write_points(payload)
 
 
@@ -27,7 +29,7 @@ def write_db(payload):
 
 def on_message(client, userdata, msg):   
     ## insert data into database
-    #write_db(msg.payload)
+    write_db(json.loads(msg.payload))
     print("Message received. Topic: {}. Payload: {}".format(
             msg.topic, str(msg.payload)))
 
