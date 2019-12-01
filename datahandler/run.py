@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 import sys
+from influxdb import InfluxDBClient
 
 
 def on_connect(client, userdata, flags, rc):    
@@ -13,10 +14,20 @@ def on_connect(client, userdata, flags, rc):
 def on_subscribe(client, userdata, mid, granted_qos):    
     print("I've subscribed")
 
+def write_db(payload):
+    dbname="ihome"
+    host="influx"
+    port=8086
+    influx_client = InfluxDBClient(host=host, port=port)
+    influx_client.switch_database(dbname)
+    return influx_client.write_points(payload)
+
+
 
 
 def on_message(client, userdata, msg):   
     ## insert data into database
+    write_db(msg.payload)
 
     print("Message received. Topic: {}. Payload: {}".format(
             msg.topic, str(msg.payload)))
