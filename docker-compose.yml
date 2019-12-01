@@ -4,7 +4,7 @@ services:
   mqtt: 
     image: eclipse-mosquitto
     volumes: 
-      - ./data/mqtt/config:/mosquitto/config
+      # - ./data/mqtt/config:/mosquitto/config
       - ./data/mqtt/data:/mosquitto/data
       - ./data/mqtt/logs:/mosquitto/log
     ports: 
@@ -13,7 +13,7 @@ services:
   grafana:
     image: grafana/grafana
     volumes: 
-      -./data/grafana:/var/lib/grafana
+      - ./data/grafana:/var/lib/grafana
     ports: 
       - 80:3000
   
