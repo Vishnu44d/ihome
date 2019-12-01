@@ -17,7 +17,7 @@ def on_subscribe(client, userdata, mid, granted_qos):
 
 def write_db(payload):
     try:
-        influx_client.write_points(payload):
+        influx_client.write_points(payload)
         print("Data write done!")
     except Exception as e:
         print("Error writting ", str(e))

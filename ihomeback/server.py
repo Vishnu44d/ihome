@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 import json
+import random
 # from flask_mqtt import Mqtt
 
 app = Flask(__name__)
@@ -55,7 +56,7 @@ def root():
                     "host": "server01"
                 },
                 "fields": {
-                    "value": 90,
+                    "value": random.randint(30,60),
                 }
             }
         ]
@@ -67,6 +68,6 @@ def root():
 
 if __name__ == "__main__":
     print("Starting the server")
-    app.run(host="0.0.0.0") 
+    app.run(host="0.0.0.0", use_reloader=False) 
     client.loop_forever()
     
