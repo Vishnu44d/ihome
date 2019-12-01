@@ -31,13 +31,17 @@ def on_message(client, userdata, msg):
     print("Message received. Topic: {}. Payload: {}".format(
             msg.topic, str(msg.payload)))
 
+def on_disconnect(client, userdata, rc):
+    print("Reconnecting")
+    client.connect(host="mqtt", port=1883)
 
 
 if __name__ == "__main__":    
     client = mqtt.Client(protocol=mqtt.MQTTv311)    
     client.on_connect = on_connect    
     client.on_subscribe = on_subscribe    
-    client.on_message = on_message    
+    client.on_message = on_message
+    client.on_disconnect = on_disconnect    
     client.connect(host="mqtt", port=1883)  
     dbname="ihome"
     host="influx"
