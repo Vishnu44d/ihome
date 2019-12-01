@@ -68,6 +68,6 @@ def root():
 
 if __name__ == "__main__":
     print("Starting the server")
-    app.run() 
+    app.run(host="0.0.0.0") 
     client.loop_forever()
     
