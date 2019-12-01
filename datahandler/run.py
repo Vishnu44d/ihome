@@ -27,8 +27,7 @@ def write_db(payload):
 
 def on_message(client, userdata, msg):   
     ## insert data into database
-    write_db(msg.payload)
-
+    #write_db(msg.payload)
     print("Message received. Topic: {}. Payload: {}".format(
             msg.topic, str(msg.payload)))
 

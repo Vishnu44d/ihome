@@ -60,7 +60,7 @@ def root():
                 }
             }
         ]
-        client.publish("sensors/thermometer/1", json.dumps(json_body)).wait_for_publish()
+        client.publish("sensors/thermometer/1", json.dumps(json_body))
         return "<h1>Hello</h1>"
     except Exception as e:
         print(str(e))
