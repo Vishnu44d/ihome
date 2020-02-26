@@ -2,9 +2,20 @@ import os
 from flask import Flask
 import json
 import random
+import sys
+sys.path.insert(0, os.getcwd())
 # from flask_mqtt import Mqtt
+from ihomeback.api import userBP
+from ihomeback import create_db_engine, create_db_sessionFactory
+from ihomeback.config import DbEngine_config
+from ihomeback.models import createTables, destroyTables
 
 app = Flask(__name__)
+engine = create_db_engine(DbEngine_config)
+createTables(engine)
+
+SessionFactory = create_db_sessionFactory(engine)
+SQLSession = create_db_sessionFactory(engine)
 
 app.config['MQTT_BROKER_URL'] = 'mqtt'
 app.config['MQTT_BROKER_PORT'] = 1883
@@ -52,6 +63,8 @@ client.connect(host="mqtt", port=1883)
 
 @app.route('/', methods=['GET'])
 def root():
+    return "<h1>Hey Vishnu</h1>"
+    '''
     try:
         json_body = [
             {
@@ -69,9 +82,13 @@ def root():
     except Exception as e:
         print(str(e))
         return "<h1>World</h1>"
+    '''
+
+
+app.register_blueprint(userBP, url_prefix='/user')
 
 if __name__ == "__main__":
-    print("Starting the server")
+    print("Starting the backend server")
     app.run(host="0.0.0.0", use_reloader=False) 
     client.loop_forever()
     
