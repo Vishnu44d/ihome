@@ -11,11 +11,11 @@ class User(Base):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    email = Column(String(255), unique=True, nullable=False)
+    email = Column(String(25), unique=True, nullable=False)
     registered_on = Column(DateTime, nullable=False)
     admin = Column(Boolean, nullable=False, default=False)
     public_id = Column(String(100), unique=True)
-    username = Column(String(50), unique=True)
+    username = Column(String(50))
     password_hash = Column(String(100))
 
     @property
