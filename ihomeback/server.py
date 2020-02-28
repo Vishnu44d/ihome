@@ -6,9 +6,12 @@ import sys
 sys.path.insert(0, os.getcwd())
 # from flask_mqtt import Mqtt
 from ihomeback.api import userBP
+from ihomeback.api import deviceBP
 from ihomeback import create_db_engine, create_db_sessionFactory
 from ihomeback.config import DbEngine_config
 from ihomeback.models import createTables, destroyTables
+
+
 
 app = Flask(__name__)
 engine = create_db_engine(DbEngine_config)
@@ -35,8 +38,10 @@ import sys
 def on_connect(client, userdata, flags, rc):    
     print("Result from connect: {}".format(
             mqtt.connack_string(rc)))    
-# Subscribe to the senors/alitmeter/1 topic filter 
-    client.subscribe("sensors/thermometer/1")     
+    # Subscribe to the senors/alitmeter/1 topic filter 
+    from topics import topics
+    for topic in topics:
+        client.subscribe(topic)  
 
 def on_subscribe(client, userdata, mid, granted_qos):    
     print("I've subscribed")
@@ -63,14 +68,12 @@ client.connect(host="mqtt", port=1883)
 
 @app.route('/', methods=['GET'])
 def root():
-    return "<h1>Hey Vishnu</h1>"
-    '''
     try:
         json_body = [
             {
                 "measurement": "temperature",
                 "tags": {
-                    "host": "server01"
+                    "host": "server04"
                 },
                 "fields": {
                     "value": random.randint(30,60),
@@ -78,14 +81,27 @@ def root():
             }
         ]
         client.publish("sensors/thermometer/1", json.dumps(json_body)).wait_for_publish()
+        json_body = [
+            {
+                "measurement": "humidity",
+                "tags": {
+                    "host": "server04"
+                },
+                "fields": {
+                    "value": random.randint(80,100),
+                }
+            }
+        ]
+        client.publish("sensors/humidity/1", json.dumps(json_body)).wait_for_publish()
         return "<h1>Hello</h1>"
     except Exception as e:
         print(str(e))
         return "<h1>World</h1>"
-    '''
+    
 
 
 app.register_blueprint(userBP, url_prefix='/user')
+app.register_blueprint(deviceBP, url_prefix='/device')
 
 if __name__ == "__main__":
     print("Starting the backend server")
