@@ -8,10 +8,19 @@ class Device(Base):
     __tablename__ = "device"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(10), unique=True, nullable=False)
-    port = Column(String(2), unique=True, nullable=False)
+    name = Column(String(50), unique=True, nullable=False)
+    port = Column(String(5), unique=True, nullable=False)
     status = Column(Boolean, nullable=False, default=False)
-    location = Column(String(20))
+
+    alias = Column(String(50), unique=True, nullable=False)
+    monitoring = Column(Boolean, nullable=False, default=False)
+    measurement = Column(String(20))
+
+    min_intensity = Column(String(5))
+    max_intensity = Column(String(5))
+    cur_intensity = Column(String(5))
+
+    location = Column(String(50))
     desc = Column(String(255))
     created_on = Column(DateTime, nullable=False)
     updated_on = Column(DateTime, nullable=False)

@@ -3,14 +3,11 @@ import sys
 from influxdb import InfluxDBClient
 import json
 
-
 ## COnnection from the postgres database
 from dbConnect import DbEngine_config, create_db_engine, create_db_sessionFactory
 engine = create_db_engine(DbEngine_config)
 SessionFactory = create_db_sessionFactory(engine)
 SQLSession = create_db_sessionFactory(engine)
-
-
 
 def on_connect(client, userdata, flags, rc):    
     print("Result from connect: {}".format(
@@ -19,9 +16,6 @@ def on_connect(client, userdata, flags, rc):
     from topics import topics
     for topic in topics:
         client.subscribe(topic)
-    
-
-
 
 def on_subscribe(client, userdata, mid, granted_qos):    
     print("I've subscribed")
@@ -32,8 +26,6 @@ def write_db(payload):
         print("Data write done!")
     except Exception as e:
         print("Error writting ", str(e))
-
-
 
 
 def on_message(client, userdata, msg):   
@@ -49,7 +41,7 @@ def on_message(client, userdata, msg):
         write_db(json.loads(msg.payload))
     elif super_topic == "status":
         # update the status of the device in postgresDB
-        
+
         try:
             session = SQLSession()
             ## update the status of device in postgres

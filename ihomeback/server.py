@@ -10,11 +10,13 @@ from ihomeback.api import deviceBP
 from ihomeback import create_db_engine, create_db_sessionFactory
 from ihomeback.config import DbEngine_config
 from ihomeback.models import createTables, destroyTables
+from flask_cors import CORS
 
 
 
 app = Flask(__name__)
 engine = create_db_engine(DbEngine_config)
+#destroyTables(engine)
 createTables(engine)
 
 SessionFactory = create_db_sessionFactory(engine)
@@ -65,7 +67,7 @@ client.on_disconnect = on_disconnect
 client.connect(host="mqtt", port=1883)
  
 
-
+CORS(app, supports_credentials=True)
 @app.route('/', methods=['GET'])
 def root():
     try:
