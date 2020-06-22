@@ -22,13 +22,6 @@ services:
     ports:
       - 1883:1883
 
-  ihomeapp:
-    build:
-      context: ./build
-      dockerfile: Dockerfile
-    ports:
-      - 80:80
-
   influx:
     image: influxdb
     volumes:
