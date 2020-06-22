@@ -5,17 +5,19 @@ import datetime
 
 deviceBP = Blueprint('deviceApi', __name__)
 
+
 @deviceBP.route('/test', methods=['GET'])
 def get_me_my_humidity():
     from influxdb import InfluxDBClient
-    dbname="ihome"
-    host="influx"
-    port=8086
+    dbname = "ihome"
+    host = "influx"
+    port = 8086
     influx_client = InfluxDBClient(host=host, port=port)
     influx_client.switch_database(dbname)
     a = influx_client.query('SELECT * FROM humidity;')
     print(a)
     return jsonify({"data": list(a.get_points(measurement="humidity"))}), 200
+
 
 @deviceBP.route('/', methods=['GET'])
 def devices():
@@ -27,29 +29,32 @@ def devices():
         auth = request.args.get('auth', None, type=str)
         print("auth = ", auth)
     except:
-        response={
-            "status":"fail",
-            "messahe":"No argument"
+        response = {
+            "status": "fail",
+            "messahe": "No argument"
         }
         return jsonify(response), 400
-    if(validate_token({"token":auth})):
+    if(validate_token({"token": auth})):
         from server import SQLSession
         session = SQLSession()
         devices = session.query(Device).all()
         session.close()
         res = [{
             "id": device.id,                        # id of device, for further query
-            "name": device.name,                    # name of the device    
-            "port": device.port,                    # port of the pi, from which device is connected
+            "name": device.name,                    # name of the device
+            # port of the pi, from which device is connected
+            "port": device.port,
             "location": device.location,            # location of device e.g. kitchen
             "desc": device.desc,                    # description of the device
-            "status": device.status,                # status of the device, wether it is on or off
+            # status of the device, wether it is on or off
+            "status": device.status,
             "monitoring": device.monitoring,        # wheather device allow monitoring or not
-            "measurement": device.measurement,      # if monitoring is on then which measurement it uses if not then null
+            # if monitoring is on then which measurement it uses if not then null
+            "measurement": device.measurement,
             "min_intensity": device.min_intensity,  # min intensity of the device
             "max_intensity": device.max_intensity,  # max intensity of the device
             "cur_intensity": device.cur_intensity   # current intensity of the device
-            } for device in devices]
+        } for device in devices]
         response = {
             "status": "success",
             "message": "device information",
@@ -76,6 +81,7 @@ def update_device():
 ###################### CONTROLLING ####################################################
 #######################################################################################
 
+
 @deviceBP.route('/toggle', methods=['POST'])
 def toggle_device():
     '''
@@ -89,7 +95,8 @@ def toggle_device():
             dev_name = data['device_name']
             operation = data['operation']
             from server import client
-            client.publish("cmd/toggle/{}".format(dev_name), operation).wait_for_publish()
+            client.publish("cmd/toggle/{}".format(dev_name),
+                           operation).wait_for_publish()
             return jsonify({"message": "published"}), 200
         except Exception as e:
             print(str(e))
@@ -111,7 +118,8 @@ def change_intensity():
             dev_name = data['device_name']
             intensity = data['intensity']
             from server import client
-            client.publish("cmd/intensity/{}".format(dev_name), intensity).wait_for_publish()
+            client.publish("cmd/intensity/{}".format(dev_name),
+                           intensity).wait_for_publish()
             return jsonify({"message": "published"}), 200
         except Exception as e:
             print(str(e))
@@ -122,6 +130,7 @@ def change_intensity():
 #######################################################################################
 ############################ MONITORING ###############################################
 #######################################################################################
+
 
 @deviceBP.route('/getrangedata', methods=['POST'])
 def get_range_data():
@@ -141,22 +150,24 @@ def get_range_data():
                 return jsonify({"message": "No such device"}), 400
             if d.monitoring == False:
                 return jsonify({"message": "Monitoring not allowed"}), 404
-            
+
             from influxdb import InfluxDBClient
-            dbname="ihome"
-            host="influx"
-            port=8086
+            dbname = "ihome"
+            host = "influx"
+            port = 8086
             influx_client = InfluxDBClient(host=host, port=port)
             influx_client.switch_database(dbname)
-            q = 'SELECT * FROM {} WHERE time > now() - {};'.format(d.measurement, data['duration'])
+            q = 'SELECT * FROM {} WHERE time > now() - {};'.format(d.measurement,
+                                                                   data['duration'])
             a = influx_client.query(q)
             return jsonify({
                 "data": list(a.get_points(measurement=d.measurement))
-                }), 200
+            }), 200
         except Exception as e:
             return jsonify({"message": str(e)}), 500
     else:
         return jsonify({"message": "Unauthorize"}), 300
+
 
 @deviceBP.route('/getlatestdata', methods=['POST'])
 def get_latest_data():
@@ -166,6 +177,7 @@ def get_latest_data():
         3. return this data in json format.
     '''
     data = request.json
+    print(data)
     if(validate_token(data)):
         try:
             from server import SQLSession
@@ -176,18 +188,19 @@ def get_latest_data():
                 return jsonify({"message": "No such device"}), 400
             if d.monitoring == False:
                 return jsonify({"message": "Monitoring not allowed"}), 404
-            
+
             from influxdb import InfluxDBClient
-            dbname="ihome"
-            host="influx"
-            port=8086
+            dbname = "ihome"
+            host = "influx"
+            port = 8086
             influx_client = InfluxDBClient(host=host, port=port)
             influx_client.switch_database(dbname)
             q = 'SELECT LAST(value) FROM {}'.format(d.measurement)
             a = influx_client.query(q)
+            print(list(a.get_points(measurement=d.measurement)))
             return jsonify({
                 "data": list(a.get_points(measurement=d.measurement))
-                }), 200
+            }), 200
         except Exception as e:
             return jsonify({"message": str(e)}), 500
     else:
@@ -204,23 +217,23 @@ def add_device():
     session = SQLSession()
     data = request.json
     new_device = Device(
-        name = data["name"],
-        port = data["port"],
-        alias = data["alias"],
-        monitoring = data["monitoring"],
-        measurement = data["measurement"],
-        min_intensity = data["min_intensity"],
-        max_intensity = data["max_intensity"],
-        cur_intensity = data["cur_intensity"],
-        location = data["location"],
-        desc = data["desc"],
-        created_on = datetime.datetime.utcnow(),
-        updated_on = datetime.datetime.utcnow()
+        name=data["name"],
+        port=data["port"],
+        alias=data["alias"],
+        monitoring=data["monitoring"],
+        measurement=data["measurement"],
+        min_intensity=data["min_intensity"],
+        max_intensity=data["max_intensity"],
+        cur_intensity=data["cur_intensity"],
+        location=data["location"],
+        desc=data["desc"],
+        created_on=datetime.datetime.utcnow(),
+        updated_on=datetime.datetime.utcnow()
     )
     try:
         session.add(new_device)
         session.commit()
         session.close()
-        return jsonify({"message":"success"}), 200
+        return jsonify({"message": "success"}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 500
