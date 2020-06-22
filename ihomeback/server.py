@@ -17,7 +17,7 @@ sys.path.insert(0, os.getcwd())
 app = Flask(__name__)
 engine = create_db_engine(DbEngine_config)
 # destroyTables(engine)
-createTables(engine)
+# createTables(engine)
 
 SessionFactory = create_db_sessionFactory(engine)
 SQLSession = create_db_sessionFactory(engine)
